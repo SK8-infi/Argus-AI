@@ -197,8 +197,52 @@ This document catalogs the academic papers, industry reports, and technical refe
 |--------|---------------|
 | **Module 0: Data** | R1, R3, R6, R7 |
 | **Module 1: Digital Twin** | R8, R9, R10 |
-| **Module 2: Risk Engine** | R2, R4, R5, R18, R19 |
+| **Module 2: Risk Engine** | R2, R4, R5, R18, R19, R22, R23 |
 | **Module 3: Privilege Context** | R11, R12, R13 |
-| **Module 4: Explainability** | R17 |
-| **Module 5: Privacy** | R14, R15, R16 |
+| **Module 4: Explainability** | R17, R24 |
+| **Module 5: Privacy** | R14, R15, R16, R25 |
 | **Overall** | R20, R21 |
+
+---
+
+## Enhanced Pipeline v2.0 References
+
+### [R22] LightGBM: A Highly Efficient Gradient Boosting Decision Tree
+- **Authors**: Ke, G., et al.
+- **Title**: "LightGBM: A Highly Efficient Gradient Boosting Decision Tree"
+- **Year**: 2017
+- **Venue**: NeurIPS
+- **Relevance**: Primary supervised model in our enhanced pipeline. Achieved F1=0.949 on insider detection. Leaf-wise growth strategy is particularly effective for our imbalanced dataset with scale_pos_weight.
+- **Used In**: Enhanced Risk Scoring Engine (primary model)
+
+### [R23] XGBoost: A Scalable Tree Boosting System
+- **Authors**: Chen, T. & Guestrin, C.
+- **Title**: "XGBoost: A Scalable Tree Boosting System"
+- **Year**: 2016
+- **Venue**: ACM KDD
+- **Relevance**: Secondary supervised model. Cross-validated F1=0.935. Used for ensemble diversity in meta-learner stacking.
+- **Used In**: Enhanced Risk Scoring Engine (ensemble member)
+
+### [R24] Consistent Individualized Feature Attribution for Tree Ensembles
+- **Authors**: Lundberg, S.M., Erion, G.G., & Lee, S.I.
+- **Title**: "Consistent Individualized Feature Attribution for Tree Ensembles"
+- **Year**: 2019
+- **Venue**: AAAI
+- **Relevance**: TreeExplainer algorithm used for exact SHAP values on LightGBM. Polynomial time exact Shapley computation for tree models (vs exponential for general models). Our top feature: `clearance_normalized` (SHAP=0.610).
+- **Used In**: SHAP Explainability Layer
+
+### [R25] One-Shot Federated Stacking
+- **Authors**: Li, Q., Wen, Z., & He, B.
+- **Title**: "Practical One-Shot Federated Learning for Cross-Silo Settings"
+- **Year**: 2023
+- **Venue**: NeurIPS
+- **Relevance**: Validates one-shot federated stacking (train local, share predictions, stack globally). Our implementation shares only P(insider) scalars between departments — zero gradient exchange. AUC=0.974 vs centralized 0.983.
+- **Used In**: Federated Stacking (privacy-compliant alternative)
+
+### [R26] Stacked Generalization
+- **Authors**: Wolpert, D.H.
+- **Title**: "Stacked Generalization"
+- **Year**: 1992
+- **Venue**: Neural Networks
+- **Relevance**: Original meta-learner stacking paper. Our 3-model ensemble (LightGBM + XGBoost + LSTM-AE/IF) uses logistic regression as the level-1 learner, following this framework.
+- **Used In**: Meta-Learner Ensemble

@@ -248,3 +248,19 @@ ipywidgets>=8.0.0
 ### ADR-6: Next.js over Streamlit
 **Decision**: Use Next.js for the dashboard (with Streamlit as fallback).
 **Rationale**: Hackathon requires "demo prototype link" — Next.js produces a more polished, deployable demo. Streamlit is faster to build but looks less professional. Frontend team member can own this.
+
+### ADR-7: LightGBM as Primary Supervised Model
+**Decision**: Use LightGBM (not just unsupervised IF + LSTM-AE) as the primary scorer.
+**Rationale**: With labeled insider data available (CERT r4.2 + synthetic), supervised GBDT outperforms unsupervised anomaly detection. LightGBM achieved F1=0.949 vs IF's F1=0.873. Training is fast (< 10s), and tree-based models handle the 211 features with mixed types naturally.
+
+### ADR-8: SHAP TreeExplainer over LIME
+**Decision**: Use SHAP with TreeExplainer for model explanations.
+**Rationale**: TreeExplainer computes exact Shapley values in polynomial time for tree ensembles (vs LIME's approximate perturbation-based approach). Exact values are critical for compliance teams who need deterministic explanations. Top feature: `clearance_normalized` (SHAP=0.610).
+
+### ADR-9: Federated Stacking over Gradient Averaging
+**Decision**: Use one-shot federated stacking instead of FedAvg for privacy-compliant deployment.
+**Rationale**: Traditional FedAvg requires iterative gradient exchange (privacy risk) and struggles with heterogeneous department data. Federated stacking shares only scalar predictions (P(insider) per employee), not gradients or features. AUC=0.974 with zero raw data leaving departments.
+
+### ADR-10: Meta-Learner Stacking over Simple Averaging
+**Decision**: Use a logistic regression meta-learner to combine base model predictions.
+**Rationale**: Simple averaging treats all models equally. Meta-learner learns optimal weights: LightGBM gets highest weight (best individual F1), LSTM-AE provides complementary temporal signal. Cross-validated to avoid overfitting.

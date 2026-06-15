@@ -49,9 +49,10 @@ models/*.json
 results/
 !results/.gitkeep
 
-# Jupyter (not used, but just in case)
+# Jupyter
 .ipynb_checkpoints/
-*.ipynb
+# Track notebooks in notebooks/ directory
+!notebooks/*.ipynb
 
 # Node.js (dashboard)
 dashboard/node_modules/

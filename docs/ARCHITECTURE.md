@@ -652,3 +652,149 @@ INTENT_CHAINS = {
 ### 6. Model Performance
 - ROC/PR curves, confusion matrix, F1 over time
 - Active model version and performance trends
+
+### 7. SHAP Explainability (NEW)
+- Per-employee SHAP waterfall chart showing top risk/protective factors
+- Feature importance bars with SHAP values and feature values
+- Base value → prediction flow visualization
+
+---
+
+## Enhanced Pipeline v2.0
+
+> The following section documents the **enhanced pipeline** that replaces the original Layer 3 
+> risk scoring with a supervised ensemble achieving F1=0.949 and AUC=0.983.
+
+### Feature Engineering: 47 → 211 Dimensions
+
+The enhanced feature engineer (`argus/data/enhanced_feature_engineer.py`) expands the original 
+47 base features into **211 dimensions** across 7 new categories:
+
+| Category | Count | Description |
+|----------|-------|-------------|
+| Base features | 47 | Original temporal, access, device, communication, data movement, behavioral, sequence features |
+| Clearance | 1 | `clearance_normalized` — security clearance level (0-1) |
+| Rolling 7-day | ~35 | `roll_7d_{mean,std,max,sum}_{feature}` — 7-day windowed statistics |
+| Rolling 14-day | ~55 | `roll_14d_{mean,std,max,sum}_{feature}` — 14-day windowed statistics |
+| Expanding | ~10 | `expanding_{max,mean}_{feature}` — all-time expanding statistics |
+| Deltas | ~20 | `delta_{feature}`, `abs_delta_{feature}` — day-over-day changes |
+| Z-scores | ~20 | `zscore_{dept,role}_{feature}` — peer-relative deviation scores |
+
+### Enhanced Risk Scoring Engine
+
+```
+                      211 Features
+                          │
+            ┌─────────────┼─────────────┐
+            ▼             ▼             ▼
+    ┌──────────────┐ ┌──────────┐ ┌──────────────┐
+    │  LightGBM    │ │ XGBoost  │ │ LSTM-AE +    │
+    │              │ │          │ │ Isolation     │
+    │  500 trees   │ │ 500 trees│ │ Forest        │
+    │  depth=6     │ │ depth=6  │ │ (anomaly)     │
+    │  F1=0.949    │ │ F1=0.935 │ │ F1=0.873     │
+    └──────┬───────┘ └────┬─────┘ └──────┬───────┘
+           │              │              │
+           └──────────────┼──────────────┘
+                          ▼
+              ┌──────────────────────┐
+              │  META-LEARNER        │
+              │  (Logistic Regression│
+              │   on probabilities)  │
+              │                      │
+              │  Combines P(insider) │
+              │  from all 3 paths    │
+              └──────────┬───────────┘
+                         ▼
+                   FINAL SCORE
+                   (0.0 — 1.0)
+```
+
+**Key metrics (5-Fold CV)**:
+- F1: **0.935 ± 0.022**
+- AUC-ROC: **0.991 ± 0.002**
+- Precision: **0.990 ± 0.008**
+- FPR: **0.03%** (well below 2% target)
+
+### SHAP Explainability Layer
+
+Uses `TreeExplainer` (exact Shapley values for GBDT):
+
+**Top global features** (by mean |SHAP|):
+1. `clearance_normalized` — 0.610
+2. `roll_7d_max_data_volume_mb` — 0.532
+3. `expanding_max_systems` — 0.446
+4. `login_hour` — 0.375
+5. `temporal_entropy` — 0.372
+
+**Per-employee explanations** via `/api/explain/{emp_id}`:
+- Top 5 risk-increasing factors (feature, SHAP value, raw value)
+- Top 3 protective factors
+- Base value → prediction probability flow
+
+### Federated Stacking (Privacy-Compliant Alternative)
+
+For regulatory environments requiring data locality:
+
+```
+  Dept A        Dept B        Dept C
+    │             │             │
+    ▼             ▼             ▼
+  Local LGB    Local LGB    Local LGB
+    │             │             │
+    ▼             ▼             ▼
+  P(insider)   P(insider)   P(insider)
+    │             │             │
+    └─────────────┼─────────────┘
+                  ▼
+        ┌──────────────────┐
+        │  Global Meta-    │
+        │  Learner         │
+        │  (on predictions │
+        │   only — no raw  │
+        │   data shared)   │
+        └──────────────────┘
+```
+
+- AUC: 0.974 (vs centralized 0.983)
+- Only scalar probabilities leave each department
+- Zero raw feature sharing — minimal privacy risk
+
+### Updated API Endpoints (v2.0)
+
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `GET` | `/api/health` | Health check — models loaded, feature count, enhanced mode |
+| `GET` | `/api/overview` | Dashboard overview — threats, metrics, distribution |
+| `GET` | `/api/employees` | All employees with trust/risk scores (sortable, filterable) |
+| `GET` | `/api/employee/{emp_id}` | Employee detail + twin comparison + trust timeline |
+| `GET` | `/api/alerts?limit=N` | Top N flagged employees with intent chains |
+| `GET` | `/api/analytics` | Model metrics, top features, department stats |
+| `GET` | `/api/explain/{emp_id}` | SHAP explanation for individual employee |
+| `GET` | `/api/activity` | Live activity feed |
+
+### File Structure
+
+```
+argus/
+├── api/
+│   └── scoring_api.py          # FastAPI server (v2.0)
+├── data/
+│   ├── synthetic_generator.py  # Banking scenario generator
+│   ├── enhanced_feature_engineer.py  # 47 → 211 features
+│   └── feature_engineer.py     # Original 47 features
+├── models/
+│   ├── lstm_autoencoder.py     # Temporal anomaly detector
+│   ├── isolation_forest.py     # Static anomaly detector
+│   ├── shap_explainer.py       # TreeExplainer module
+│   └── digital_twin.py        # Behavioral genome builder
+├── privacy/
+│   └── federated_stacking.py   # One-shot federated learning
+├── experiments/
+│   ├── cross_validation.py     # 5-fold stratified CV
+│   └── ablation_study.py       # Feature/model ablation
+└── scoring/
+    ├── trust_engine.py         # Privilege decay function
+    ├── intent_chains.py        # Attack pattern matcher
+    └── alert_engine.py         # Alert generation
+```

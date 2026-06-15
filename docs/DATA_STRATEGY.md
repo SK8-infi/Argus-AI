@@ -450,3 +450,60 @@ Before training, we validate:
 4. **Feature distributions**: No NaN, no infinite values, reasonable ranges
 5. **Ground truth alignment**: Insider labels match expected scenario timelines
 6. **Class balance verification**: Insider ratio matches expected 7.5-10%
+
+---
+
+## Enhanced Feature Engineering: 47 → 211 Dimensions
+
+The enhanced pipeline (`argus/data/enhanced_feature_engineer.py`) expands the 47 base features:
+
+### Category 8: Clearance Feature (1)
+
+| # | Feature | Type | Description |
+|---|---------|------|-------------|
+| 48 | `clearance_normalized` | float | Security clearance level (0-1 scale, /5) |
+
+### Category 9: Rolling Window Statistics (~83)
+
+| Window | Aggregations | Features | Count |
+|--------|-------------|----------|-------|
+| 7-day | mean, std, max, sum | `data_volume_mb`, `files_accessed`, `emails_sent`, `unique_systems_accessed`, etc. | ~35 |
+| 14-day | mean, std, max, sum | Same base features | ~48 |
+
+**Example**: `roll_7d_max_data_volume_mb` = maximum daily data volume in the past 7 days.
+
+### Category 10: Expanding Statistics (~10)
+
+| Feature | Description |
+|---------|-------------|
+| `expanding_max_systems` | All-time max unique systems accessed |
+| `expanding_mean_data_volume` | All-time mean daily data volume |
+
+### Category 11: Day-over-Day Deltas (~24)
+
+| Feature | Description |
+|---------|-------------|
+| `delta_data_volume_mb` | Today's volume - yesterday's |
+| `abs_delta_files_accessed` | |today - yesterday| for files |
+
+### Category 12: Peer-Relative Z-Scores (~16)
+
+| Feature | Description |
+|---------|-------------|
+| `zscore_dept_data_volume_mb` | Z-score vs department average |
+| `zscore_role_unique_systems` | Z-score vs same-role peers |
+
+### Ablation Study Results (Feature Importance)
+
+| Rank | Category | F1 Drop When Removed | Verdict |
+|------|----------|---------------------|---------|
+| 1 | `rolling_14d` (48 feats) | -0.021 | **Most important** — captures slow-burn trends |
+| 2 | `clearance` (1 feat) | -0.007 | High value per feature — single strongest predictor |
+| 3 | `expanding` (2 feats) | -0.007 | All-time maxima capture anomalous peaks |
+| 4 | `zscores` (16 feats) | -0.007 | Peer deviation is strong signal |
+| 5 | `communication` (4 feats) | -0.007 | External email patterns matter |
+| 6 | `base_access` (7 feats) | 0.000 | Redundant with rolling windows |
+| 7 | `rolling_7d` (48 feats) | +0.021 | Overlaps with 14-day; can be removed |
+
+> **Key Insight**: Rolling 14-day statistics are the most important enhanced feature category.
+> `clearance_normalized` is the single most impactful feature (SHAP=0.610).

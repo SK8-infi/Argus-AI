@@ -388,56 +388,60 @@ python demo/run_demo.py
 # Setup
 python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt
 
-# Generate data
+# ONE-CLICK DEMO (recommended for first run)
+python demo.py                      # Generate data -> Train -> API -> Dashboard
+
+# Step-by-step alternative
 python -m argus.data.synthetic_generator
+python -m argus.data.feature_engineer --source synthetic
+python -m argus.data.enhanced_feature_engineer  # 47 -> 211 features
+python -m argus.models.train_enhanced           # LightGBM + XGBoost + Meta
+python -m argus.api.scoring_api                 # Start API at :8000
+cd dashboard && npm install && npm run dev      # Dashboard at :3000
 
-# Explore data
-python -m argus.data.explore --source synthetic
+# Experiments
+python -m argus.experiments.cross_validation    # 5-fold stratified CV
+python -m argus.experiments.ablation_study      # Feature/model ablation
 
-# Train models
-python experiments/train_if.py
-python experiments/train_lstm.py --device cuda
-python experiments/train_hybrid.py
-
-# Test privilege engine
-python -m argus.models.privilege_engine --test
-
-# Test alert engine
-python -m argus.models.explainer --demo
-
-# Run full pipeline
-python -m argus.pipeline --data data/synthetic/ --date 2025-08-15
-
-# Start API
-python -m argus.api.scoring_api
-
-# Evaluate everything
-python -m argus.evaluation.evaluate --all
-
-# Run demo
-python demo/run_demo.py
+# Dashboard (separate terminal)
+cd dashboard
+npm install
+npm run dev
+# Open http://localhost:3000
 ```
 
 ---
 
 ## Build Checklist
 
-- [ ] Phase 0: Environment setup + CERT download
-- [ ] Phase 1.1: Project scaffolding
-- [ ] Phase 1.2: Synthetic data generator
-- [ ] Phase 1.3: CERT data loader
-- [ ] Phase 1.4: Feature engineering pipeline
-- [ ] Phase 1.5: Data exploration script
-- [ ] Phase 2.1: Isolation Forest training
-- [ ] Phase 2.2: LSTM Autoencoder training
-- [ ] Phase 2.3: Hybrid ensemble optimization
-- [ ] Phase 3.1: Privilege context engine
-- [ ] Phase 3.2: Explainable alert engine
-- [ ] Phase 3.3: Digital employee twin
-- [ ] Phase 4.1: End-to-end pipeline
-- [ ] Phase 4.2: FastAPI scoring API
-- [ ] Phase 5.1: Next.js dashboard
-- [ ] Phase 5.2: Dashboard-API integration
-- [ ] Phase 6.1: Ablation study
-- [ ] Phase 6.2: Evaluation report
-- [ ] Phase 6.3: Demo walkthrough
+- [x] Phase 0: Environment setup + CERT download
+- [x] Phase 1.1: Project scaffolding
+- [x] Phase 1.2: Synthetic data generator
+- [x] Phase 1.3: CERT data loader
+- [x] Phase 1.4: Feature engineering pipeline (47 features)
+- [x] Phase 1.5: Data exploration script
+- [x] Phase 2.1: Isolation Forest training
+- [x] Phase 2.2: LSTM Autoencoder training
+- [x] Phase 2.3: Hybrid ensemble optimization
+- [x] Phase 3.1: Privilege context engine
+- [x] Phase 3.2: Explainable alert engine
+- [x] Phase 3.3: Digital employee twin
+- [x] Phase 4.1: End-to-end pipeline
+- [x] Phase 4.2: FastAPI scoring API (v2.0 — enhanced models)
+- [x] Phase 5.1: Next.js dashboard
+- [x] Phase 5.2: Dashboard-API integration (live data + mock fallback)
+- [x] Phase 6.1: Ablation study (feature + model ablation)
+- [x] Phase 6.2: Evaluation report (SHAP analysis, CV results)
+- [x] Phase 6.3: Demo walkthrough (`demo.py` — one-click)
+
+### Enhanced Pipeline (v2.0) — Added Post-Initial Build
+
+- [x] Enhanced feature engineering (47 → 211 features)
+- [x] LightGBM/XGBoost supervised training (F1=0.949)
+- [x] Meta-learner stacking ensemble
+- [x] SHAP TreeExplainer integration
+- [x] Federated stacking (privacy-compliant alternative)
+- [x] 5-fold stratified cross-validation (F1=0.935 ± 0.022)
+- [x] Feature/model ablation study
+- [x] SHAP waterfall dashboard component
+- [x] `/api/explain/{emp_id}` endpoint

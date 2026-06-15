@@ -29,6 +29,18 @@
     "val_threshold": 0.35
   },
   {
+    "experiment": "Federated MLP (\u03b5-DP)",
+    "val_f1": 0.7711,
+    "val_threshold": 0.473,
+    "epsilon_spent": 0.0319,
+    "departments": [
+      "retail_banking",
+      "treasury",
+      "it_admin",
+      "hr"
+    ]
+  },
+  {
     "experiment": "Meta-Learner (LR)",
     "val_f1": 0.9485,
     "val_threshold": 0.054

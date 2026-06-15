@@ -1,0 +1,1610 @@
+{
+  "lgb_global_importance": [
+    {
+      "feature": "clearance_normalized",
+      "importance": 0.609544,
+      "rank": 1
+    },
+    {
+      "feature": "roll_7d_max_data_volume_mb",
+      "importance": 0.532483,
+      "rank": 2
+    },
+    {
+      "feature": "expanding_max_systems",
+      "importance": 0.445666,
+      "rank": 3
+    },
+    {
+      "feature": "login_hour",
+      "importance": 0.37486,
+      "rank": 4
+    },
+    {
+      "feature": "temporal_entropy",
+      "importance": 0.372048,
+      "rank": 5
+    },
+    {
+      "feature": "expanding_max_data_volume",
+      "importance": 0.367654,
+      "rank": 6
+    },
+    {
+      "feature": "zscore_dept_data_egress_volume",
+      "importance": 0.349594,
+      "rank": 7
+    },
+    {
+      "feature": "roll_14d_std_files_accessed",
+      "importance": 0.344336,
+      "rank": 8
+    },
+    {
+      "feature": "zscore_role_data_volume_mb",
+      "importance": 0.332352,
+      "rank": 9
+    },
+    {
+      "feature": "roll_14d_sum_files_accessed",
+      "importance": 0.321509,
+      "rank": 10
+    },
+    {
+      "feature": "roll_14d_mean_data_volume_mb",
+      "importance": 0.264201,
+      "rank": 11
+    },
+    {
+      "feature": "roll_14d_mean_files_accessed",
+      "importance": 0.252577,
+      "rank": 12
+    },
+    {
+      "feature": "roll_14d_std_data_volume_mb",
+      "importance": 0.229092,
+      "rank": 13
+    },
+    {
+      "feature": "command_diversity_index",
+      "importance": 0.22099,
+      "rank": 14
+    },
+    {
+      "feature": "zscore_dept_unique_systems_accessed",
+      "importance": 0.217335,
+      "rank": 15
+    },
+    {
+      "feature": "roll_14d_sum_is_after_hours",
+      "importance": 0.198782,
+      "rank": 16
+    },
+    {
+      "feature": "roll_14d_max_files_accessed",
+      "importance": 0.162898,
+      "rank": 17
+    },
+    {
+      "feature": "is_after_hours",
+      "importance": 0.161259,
+      "rank": 18
+    },
+    {
+      "feature": "zscore_role_data_egress_volume",
+      "importance": 0.161067,
+      "rank": 19
+    },
+    {
+      "feature": "roll_7d_mean_data_volume_mb",
+      "importance": 0.140123,
+      "rank": 20
+    },
+    {
+      "feature": "abs_delta_avg_attachment_size",
+      "importance": 0.139693,
+      "rank": 21
+    },
+    {
+      "feature": "time_since_last_session",
+      "importance": 0.138503,
+      "rank": 22
+    },
+    {
+      "feature": "roll_7d_std_data_volume_mb",
+      "importance": 0.136199,
+      "rank": 23
+    },
+    {
+      "feature": "delta_login_hour",
+      "importance": 0.136041,
+      "rank": 24
+    },
+    {
+      "feature": "zscore_dept_data_volume_mb",
+      "importance": 0.126136,
+      "rank": 25
+    },
+    {
+      "feature": "roll_14d_sum_data_volume_mb",
+      "importance": 0.125298,
+      "rank": 26
+    },
+    {
+      "feature": "velocity_data_egress_volume",
+      "importance": 0.124139,
+      "rank": 27
+    },
+    {
+      "feature": "weekday_vs_weekend_ratio",
+      "importance": 0.123212,
+      "rank": 28
+    },
+    {
+      "feature": "abs_delta_behavioral_velocity",
+      "importance": 0.119491,
+      "rank": 29
+    },
+    {
+      "feature": "zscore_role_session_duration_hrs",
+      "importance": 0.115102,
+      "rank": 30
+    },
+    {
+      "feature": "external_email_ratio",
+      "importance": 0.114566,
+      "rank": 31
+    },
+    {
+      "feature": "emails_sent",
+      "importance": 0.101081,
+      "rank": 32
+    },
+    {
+      "feature": "roll_14d_max_data_volume_mb",
+      "importance": 0.095492,
+      "rank": 33
+    },
+    {
+      "feature": "unique_recipients",
+      "importance": 0.088185,
+      "rank": 34
+    },
+    {
+      "feature": "action_sequence_entropy",
+      "importance": 0.084835,
+      "rank": 35
+    },
+    {
+      "feature": "velocity_files_accessed",
+      "importance": 0.082138,
+      "rank": 36
+    },
+    {
+      "feature": "interact_data_volume_mb_x_login_regularity_score",
+      "importance": 0.081118,
+      "rank": 37
+    },
+    {
+      "feature": "roll_7d_max_files_accessed",
+      "importance": 0.076369,
+      "rank": 38
+    },
+    {
+      "feature": "behavioral_velocity",
+      "importance": 0.075317,
+      "rank": 39
+    },
+    {
+      "feature": "emails_received",
+      "importance": 0.071596,
+      "rank": 40
+    },
+    {
+      "feature": "session_action_diversity",
+      "importance": 0.068784,
+      "rank": 41
+    },
+    {
+      "feature": "delta_session_duration_hrs",
+      "importance": 0.0596,
+      "rank": 42
+    },
+    {
+      "feature": "abs_delta_files_accessed",
+      "importance": 0.058474,
+      "rank": 43
+    },
+    {
+      "feature": "session_duration_hrs",
+      "importance": 0.057828,
+      "rank": 44
+    },
+    {
+      "feature": "zscore_role_login_hour",
+      "importance": 0.055704,
+      "rank": 45
+    },
+    {
+      "feature": "roll_14d_mean_data_egress_volume",
+      "importance": 0.053684,
+      "rank": 46
+    },
+    {
+      "feature": "max_dept_zscore",
+      "importance": 0.05038,
+      "rank": 47
+    },
+    {
+      "feature": "accel_data_volume_mb",
+      "importance": 0.048636,
+      "rank": 48
+    },
+    {
+      "feature": "roll_14d_mean_is_after_hours",
+      "importance": 0.048433,
+      "rank": 49
+    },
+    {
+      "feature": "zscore_dept_login_hour",
+      "importance": 0.047506,
+      "rank": 50
+    }
+  ],
+  "xgb_global_importance": [
+    {
+      "feature": "clearance_normalized",
+      "importance": 0.560317,
+      "rank": 1
+    },
+    {
+      "feature": "login_hour",
+      "importance": 0.432248,
+      "rank": 2
+    },
+    {
+      "feature": "temporal_entropy",
+      "importance": 0.42301,
+      "rank": 3
+    },
+    {
+      "feature": "roll_14d_std_data_volume_mb",
+      "importance": 0.373683,
+      "rank": 4
+    },
+    {
+      "feature": "zscore_dept_data_egress_volume",
+      "importance": 0.360723,
+      "rank": 5
+    },
+    {
+      "feature": "zscore_role_data_volume_mb",
+      "importance": 0.344442,
+      "rank": 6
+    },
+    {
+      "feature": "roll_14d_sum_files_accessed",
+      "importance": 0.333993,
+      "rank": 7
+    },
+    {
+      "feature": "command_diversity_index",
+      "importance": 0.322059,
+      "rank": 8
+    },
+    {
+      "feature": "roll_7d_max_data_volume_mb",
+      "importance": 0.307828,
+      "rank": 9
+    },
+    {
+      "feature": "expanding_max_data_volume",
+      "importance": 0.287894,
+      "rank": 10
+    },
+    {
+      "feature": "roll_14d_sum_is_after_hours",
+      "importance": 0.281842,
+      "rank": 11
+    },
+    {
+      "feature": "expanding_max_systems",
+      "importance": 0.270929,
+      "rank": 12
+    },
+    {
+      "feature": "roll_14d_mean_data_volume_mb",
+      "importance": 0.258534,
+      "rank": 13
+    },
+    {
+      "feature": "action_sequence_entropy",
+      "importance": 0.207023,
+      "rank": 14
+    },
+    {
+      "feature": "zscore_dept_unique_systems_accessed",
+      "importance": 0.201849,
+      "rank": 15
+    },
+    {
+      "feature": "roll_14d_std_files_accessed",
+      "importance": 0.187168,
+      "rank": 16
+    },
+    {
+      "feature": "unique_recipients",
+      "importance": 0.186163,
+      "rank": 17
+    },
+    {
+      "feature": "roll_14d_mean_files_accessed",
+      "importance": 0.185656,
+      "rank": 18
+    },
+    {
+      "feature": "abs_delta_behavioral_velocity",
+      "importance": 0.169877,
+      "rank": 19
+    },
+    {
+      "feature": "zscore_dept_data_volume_mb",
+      "importance": 0.16593,
+      "rank": 20
+    },
+    {
+      "feature": "abs_delta_avg_attachment_size",
+      "importance": 0.142734,
+      "rank": 21
+    },
+    {
+      "feature": "delta_login_hour",
+      "importance": 0.139814,
+      "rank": 22
+    },
+    {
+      "feature": "external_email_ratio",
+      "importance": 0.138849,
+      "rank": 23
+    },
+    {
+      "feature": "roll_7d_std_data_volume_mb",
+      "importance": 0.135527,
+      "rank": 24
+    },
+    {
+      "feature": "time_since_last_session",
+      "importance": 0.134736,
+      "rank": 25
+    },
+    {
+      "feature": "zscore_role_data_egress_volume",
+      "importance": 0.130781,
+      "rank": 26
+    },
+    {
+      "feature": "roll_14d_max_files_accessed",
+      "importance": 0.128923,
+      "rank": 27
+    },
+    {
+      "feature": "weekday_vs_weekend_ratio",
+      "importance": 0.128217,
+      "rank": 28
+    },
+    {
+      "feature": "velocity_data_egress_volume",
+      "importance": 0.126696,
+      "rank": 29
+    },
+    {
+      "feature": "session_duration_hrs",
+      "importance": 0.108257,
+      "rank": 30
+    },
+    {
+      "feature": "abs_delta_files_accessed",
+      "importance": 0.099262,
+      "rank": 31
+    },
+    {
+      "feature": "roll_7d_mean_data_volume_mb",
+      "importance": 0.092999,
+      "rank": 32
+    },
+    {
+      "feature": "roll_14d_max_data_volume_mb",
+      "importance": 0.091856,
+      "rank": 33
+    },
+    {
+      "feature": "delta_session_duration_hrs",
+      "importance": 0.090443,
+      "rank": 34
+    },
+    {
+      "feature": "zscore_role_session_duration_hrs",
+      "importance": 0.086363,
+      "rank": 35
+    },
+    {
+      "feature": "is_after_hours",
+      "importance": 0.083105,
+      "rank": 36
+    },
+    {
+      "feature": "accel_data_volume_mb",
+      "importance": 0.078533,
+      "rank": 37
+    },
+    {
+      "feature": "velocity_files_accessed",
+      "importance": 0.077457,
+      "rank": 38
+    },
+    {
+      "feature": "roll_7d_mean_files_accessed",
+      "importance": 0.075201,
+      "rank": 39
+    },
+    {
+      "feature": "emails_received",
+      "importance": 0.074444,
+      "rank": 40
+    },
+    {
+      "feature": "roll_14d_sum_data_volume_mb",
+      "importance": 0.073357,
+      "rank": 41
+    },
+    {
+      "feature": "delta_data_volume_mb",
+      "importance": 0.070866,
+      "rank": 42
+    },
+    {
+      "feature": "session_action_diversity",
+      "importance": 0.069461,
+      "rank": 43
+    },
+    {
+      "feature": "roll_7d_max_files_accessed",
+      "importance": 0.069286,
+      "rank": 44
+    },
+    {
+      "feature": "mean_dept_zscore",
+      "importance": 0.068427,
+      "rank": 45
+    },
+    {
+      "feature": "roll_7d_std_files_accessed",
+      "importance": 0.065168,
+      "rank": 46
+    },
+    {
+      "feature": "roll_14d_mean_data_egress_volume",
+      "importance": 0.063917,
+      "rank": 47
+    },
+    {
+      "feature": "max_dept_zscore",
+      "importance": 0.063682,
+      "rank": 48
+    },
+    {
+      "feature": "delta_data_egress_volume",
+      "importance": 0.063501,
+      "rank": 49
+    },
+    {
+      "feature": "roll_14d_mean_is_after_hours",
+      "importance": 0.058047,
+      "rank": 50
+    }
+  ],
+  "insider_explanations": [
+    {
+      "prediction": 0.9996,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.8946,
+          "feature_value": 11.6457
+        },
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 2.7293,
+          "feature_value": 33.216
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.0711,
+          "feature_value": 8.2781
+        },
+        {
+          "feature": "clearance_normalized",
+          "shap_value": 1.6428,
+          "feature_value": 0.6
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.4553,
+          "feature_value": 33.216
+        },
+        {
+          "feature": "zscore_role_data_egress_volume",
+          "shap_value": 1.0125,
+          "feature_value": 3.0016
+        },
+        {
+          "feature": "zscore_role_data_volume_mb",
+          "shap_value": 0.7266,
+          "feature_value": 3.0018
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 0.6696,
+          "feature_value": 6.8167
+        },
+        {
+          "feature": "roll_14d_sum_data_volume_mb",
+          "shap_value": 0.5342,
+          "feature_value": 62.941
+        },
+        {
+          "feature": "zscore_dept_data_egress_volume",
+          "shap_value": 0.516,
+          "feature_value": 3.0538
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": -0.4299,
+          "feature_value": 4.0
+        },
+        {
+          "feature": "login_hour",
+          "shap_value": -0.3902,
+          "feature_value": 8.58
+        },
+        {
+          "feature": "temporal_entropy",
+          "shap_value": -0.2209,
+          "feature_value": 2.386
+        },
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.1811,
+          "feature_value": 97.0
+        },
+        {
+          "feature": "session_duration_hrs",
+          "shap_value": -0.1602,
+          "feature_value": 10.4
+        },
+        {
+          "feature": "delta_data_egress_volume",
+          "shap_value": -0.1512,
+          "feature_value": 1.554
+        },
+        {
+          "feature": "command_diversity_index",
+          "shap_value": -0.0843,
+          "feature_value": 0.2642
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0694,
+          "feature_value": 6.9286
+        },
+        {
+          "feature": "roll_14d_mean_data_volume_mb",
+          "shap_value": -0.0565,
+          "feature_value": 4.4958
+        },
+        {
+          "feature": "accel_data_volume_mb",
+          "shap_value": -0.0561,
+          "feature_value": 4.368
+        }
+      ],
+      "total_shap_positive": 20.6116,
+      "total_shap_negative": -2.1153
+    },
+    {
+      "prediction": 0.9999,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 3.052,
+          "feature_value": 12.2212
+        },
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 2.6577,
+          "feature_value": 33.216
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.6095,
+          "feature_value": 9.0766
+        },
+        {
+          "feature": "clearance_normalized",
+          "shap_value": 1.7439,
+          "feature_value": 0.6
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.483,
+          "feature_value": 33.216
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 0.6838,
+          "feature_value": 9.1826
+        },
+        {
+          "feature": "weekday_vs_weekend_ratio",
+          "shap_value": 0.6745,
+          "feature_value": 0.1429
+        },
+        {
+          "feature": "velocity_data_volume_mb",
+          "shap_value": 0.6634,
+          "feature_value": 2.3659
+        },
+        {
+          "feature": "zscore_dept_data_egress_volume",
+          "shap_value": 0.6012,
+          "feature_value": 1.1319
+        },
+        {
+          "feature": "time_since_last_session",
+          "shap_value": 0.5553,
+          "feature_value": 2.0
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": -0.4897,
+          "feature_value": 4.0
+        },
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.174,
+          "feature_value": 96.0
+        },
+        {
+          "feature": "delta_login_hour",
+          "shap_value": -0.148,
+          "feature_value": 0.6
+        },
+        {
+          "feature": "emails_received",
+          "shap_value": -0.1426,
+          "feature_value": 5.0
+        },
+        {
+          "feature": "command_diversity_index",
+          "shap_value": -0.1163,
+          "feature_value": 0.2857
+        },
+        {
+          "feature": "delta_session_duration_hrs",
+          "shap_value": -0.0985,
+          "feature_value": -1.48
+        },
+        {
+          "feature": "roll_14d_mean_data_volume_mb",
+          "shap_value": -0.0816,
+          "feature_value": 5.6651
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0744,
+          "feature_value": 6.8571
+        },
+        {
+          "feature": "zscore_role_login_hour",
+          "shap_value": -0.0704,
+          "feature_value": 0.9073
+        },
+        {
+          "feature": "temporal_entropy",
+          "shap_value": -0.0551,
+          "feature_value": 2.2751
+        }
+      ],
+      "total_shap_positive": 21.5447,
+      "total_shap_negative": -1.8282
+    },
+    {
+      "prediction": 0.9999,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.9036,
+          "feature_value": 14.6942
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.6149,
+          "feature_value": 11.6138
+        },
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 2.5439,
+          "feature_value": 33.348
+        },
+        {
+          "feature": "clearance_normalized",
+          "shap_value": 1.7583,
+          "feature_value": 0.6
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.2747,
+          "feature_value": 33.348
+        },
+        {
+          "feature": "zscore_role_data_egress_volume",
+          "shap_value": 0.9531,
+          "feature_value": 2.7889
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 0.6367,
+          "feature_value": 13.6149
+        },
+        {
+          "feature": "zscore_role_data_volume_mb",
+          "shap_value": 0.6303,
+          "feature_value": 2.7896
+        },
+        {
+          "feature": "zscore_dept_data_egress_volume",
+          "shap_value": 0.6232,
+          "feature_value": 2.8403
+        },
+        {
+          "feature": "velocity_data_volume_mb",
+          "shap_value": 0.6176,
+          "feature_value": 4.4323
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": -0.4214,
+          "feature_value": 4.0
+        },
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.1524,
+          "feature_value": 93.0
+        },
+        {
+          "feature": "delta_data_egress_volume",
+          "shap_value": -0.1182,
+          "feature_value": 0.729
+        },
+        {
+          "feature": "session_action_diversity",
+          "shap_value": -0.1081,
+          "feature_value": 13.0
+        },
+        {
+          "feature": "command_diversity_index",
+          "shap_value": -0.0897,
+          "feature_value": 0.2826
+        },
+        {
+          "feature": "emails_received",
+          "shap_value": -0.0706,
+          "feature_value": 4.0
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0623,
+          "feature_value": 6.6429
+        },
+        {
+          "feature": "roll_14d_mean_data_volume_mb",
+          "shap_value": -0.0611,
+          "feature_value": 7.9059
+        },
+        {
+          "feature": "accel_data_volume_mb",
+          "shap_value": -0.0588,
+          "feature_value": 2.0664
+        },
+        {
+          "feature": "temporal_entropy",
+          "shap_value": -0.0493,
+          "feature_value": 2.2968
+        }
+      ],
+      "total_shap_positive": 21.0296,
+      "total_shap_negative": -1.5309
+    },
+    {
+      "prediction": 0.9999,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.8332,
+          "feature_value": 14.8188
+        },
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 2.6402,
+          "feature_value": 33.348
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.3951,
+          "feature_value": 12.8889
+        },
+        {
+          "feature": "clearance_normalized",
+          "shap_value": 1.6858,
+          "feature_value": 0.6
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.3711,
+          "feature_value": 33.348
+        },
+        {
+          "feature": "zscore_role_data_egress_volume",
+          "shap_value": 1.0795,
+          "feature_value": 3.0514
+        },
+        {
+          "feature": "zscore_role_data_volume_mb",
+          "shap_value": 0.7977,
+          "feature_value": 3.0513
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 0.7763,
+          "feature_value": 17.5696
+        },
+        {
+          "feature": "zscore_dept_data_egress_volume",
+          "shap_value": 0.6373,
+          "feature_value": 2.5429
+        },
+        {
+          "feature": "roll_14d_max_data_volume_mb",
+          "shap_value": 0.526,
+          "feature_value": 33.348
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": -0.4572,
+          "feature_value": 4.0
+        },
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.16,
+          "feature_value": 97.0
+        },
+        {
+          "feature": "login_regularity_score",
+          "shap_value": -0.1241,
+          "feature_value": 0.0
+        },
+        {
+          "feature": "abs_delta_behavioral_velocity",
+          "shap_value": -0.1122,
+          "feature_value": 0.2038
+        },
+        {
+          "feature": "command_diversity_index",
+          "shap_value": -0.0935,
+          "feature_value": 0.3043
+        },
+        {
+          "feature": "zscore_role_session_duration_hrs",
+          "shap_value": -0.078,
+          "feature_value": -0.8717
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.063,
+          "feature_value": 6.9286
+        },
+        {
+          "feature": "interact_data_volume_mb_x_login_regularity_score",
+          "shap_value": -0.0624,
+          "feature_value": 0.0
+        },
+        {
+          "feature": "roll_14d_mean_data_volume_mb",
+          "shap_value": -0.0582,
+          "feature_value": 9.8176
+        },
+        {
+          "feature": "velocity_files_accessed",
+          "shap_value": -0.0516,
+          "feature_value": 0.1429
+        }
+      ],
+      "total_shap_positive": 21.6814,
+      "total_shap_negative": -1.5251
+    },
+    {
+      "prediction": 1.0,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 2.7431,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.2654,
+          "feature_value": 14.7441
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.1281,
+          "feature_value": 14.501
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.1689,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 1.0661,
+          "feature_value": 22.3403
+        },
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": 0.8655,
+          "feature_value": 5.0
+        },
+        {
+          "feature": "zscore_role_data_egress_volume",
+          "shap_value": 0.8571,
+          "feature_value": 3.0077
+        },
+        {
+          "feature": "roll_14d_sum_data_volume_mb",
+          "shap_value": 0.7616,
+          "feature_value": 171.38
+        },
+        {
+          "feature": "roll_7d_mean_device_count",
+          "shap_value": 0.7235,
+          "feature_value": 1.1429
+        },
+        {
+          "feature": "zscore_role_data_volume_mb",
+          "shap_value": 0.7192,
+          "feature_value": 2.9502
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "zscore_dept_unique_systems_accessed",
+          "shap_value": -0.145,
+          "feature_value": 1.1775
+        },
+        {
+          "feature": "delta_login_hour",
+          "shap_value": -0.1342,
+          "feature_value": 0.63
+        },
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.1302,
+          "feature_value": 102.0
+        },
+        {
+          "feature": "delta_data_egress_volume",
+          "shap_value": -0.1275,
+          "feature_value": 9.444
+        },
+        {
+          "feature": "zscore_role_login_hour",
+          "shap_value": -0.0966,
+          "feature_value": 1.1318
+        },
+        {
+          "feature": "abs_delta_files_accessed",
+          "shap_value": -0.0965,
+          "feature_value": 1.0
+        },
+        {
+          "feature": "roll_14d_mean_data_egress_volume",
+          "shap_value": -0.08,
+          "feature_value": 1.2629
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0631,
+          "feature_value": 7.2857
+        },
+        {
+          "feature": "zscore_role_session_duration_hrs",
+          "shap_value": -0.0533,
+          "feature_value": -1.1151
+        },
+        {
+          "feature": "accel_data_volume_mb",
+          "shap_value": -0.0472,
+          "feature_value": 0.816
+        }
+      ],
+      "total_shap_positive": 23.0846,
+      "total_shap_negative": -1.2065
+    },
+    {
+      "prediction": 1.0,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 2.8201,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.1735,
+          "feature_value": 11.9095
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.063,
+          "feature_value": 14.5978
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.3179,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 1.2413,
+          "feature_value": 25.653
+        },
+        {
+          "feature": "zscore_role_data_egress_volume",
+          "shap_value": 0.9315,
+          "feature_value": 2.7539
+        },
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": 0.8734,
+          "feature_value": 5.0
+        },
+        {
+          "feature": "roll_14d_sum_data_volume_mb",
+          "shap_value": 0.7656,
+          "feature_value": 195.292
+        },
+        {
+          "feature": "zscore_role_data_volume_mb",
+          "shap_value": 0.7355,
+          "feature_value": 2.754
+        },
+        {
+          "feature": "roll_7d_mean_device_count",
+          "shap_value": 0.7072,
+          "feature_value": 1.2857
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "zscore_dept_unique_systems_accessed",
+          "shap_value": -0.1906,
+          "feature_value": 1.1202
+        },
+        {
+          "feature": "temporal_entropy",
+          "shap_value": -0.1806,
+          "feature_value": 2.412
+        },
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.1483,
+          "feature_value": 104.0
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0781,
+          "feature_value": 7.4286
+        },
+        {
+          "feature": "command_diversity_index",
+          "shap_value": -0.0715,
+          "feature_value": 0.2381
+        },
+        {
+          "feature": "roll_14d_mean_data_egress_volume",
+          "shap_value": -0.0503,
+          "feature_value": 1.3483
+        },
+        {
+          "feature": "emails_received",
+          "shap_value": -0.037,
+          "feature_value": 3.0
+        },
+        {
+          "feature": "is_after_hours",
+          "shap_value": -0.0289,
+          "feature_value": 1.0
+        },
+        {
+          "feature": "roll_14d_max_files_accessed",
+          "shap_value": -0.0288,
+          "feature_value": 13.0
+        },
+        {
+          "feature": "unusual_recipient_flag",
+          "shap_value": -0.0278,
+          "feature_value": 1.0
+        }
+      ],
+      "total_shap_positive": 23.1191,
+      "total_shap_negative": -1.0242
+    },
+    {
+      "prediction": 1.0,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 2.6627,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.1907,
+          "feature_value": 6.3132
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.0834,
+          "feature_value": 14.3238
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 1.2164,
+          "feature_value": 28.6814
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.1836,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": 0.8677,
+          "feature_value": 5.0
+        },
+        {
+          "feature": "roll_14d_sum_data_volume_mb",
+          "shap_value": 0.7847,
+          "feature_value": 217.201
+        },
+        {
+          "feature": "zscore_role_data_egress_volume",
+          "shap_value": 0.711,
+          "feature_value": 1.7584
+        },
+        {
+          "feature": "roll_7d_mean_device_count",
+          "shap_value": 0.7078,
+          "feature_value": 1.4286
+        },
+        {
+          "feature": "zscore_role_data_volume_mb",
+          "shap_value": 0.6329,
+          "feature_value": 1.7581
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "login_hour",
+          "shap_value": -0.2823,
+          "feature_value": 8.73
+        },
+        {
+          "feature": "zscore_dept_unique_systems_accessed",
+          "shap_value": -0.1909,
+          "feature_value": 1.1466
+        },
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.145,
+          "feature_value": 106.0
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0775,
+          "feature_value": 7.5714
+        },
+        {
+          "feature": "roll_14d_mean_data_egress_volume",
+          "shap_value": -0.0536,
+          "feature_value": 1.4266
+        },
+        {
+          "feature": "roll_7d_std_files_accessed",
+          "shap_value": -0.035,
+          "feature_value": 1.7182
+        },
+        {
+          "feature": "roll_14d_mean_data_volume_mb",
+          "shap_value": -0.0322,
+          "feature_value": 15.5144
+        },
+        {
+          "feature": "roll_14d_max_files_accessed",
+          "shap_value": -0.0322,
+          "feature_value": 13.0
+        },
+        {
+          "feature": "is_after_hours",
+          "shap_value": -0.0311,
+          "feature_value": 1.0
+        },
+        {
+          "feature": "delta_behavioral_velocity",
+          "shap_value": -0.0264,
+          "feature_value": -3.1453
+        }
+      ],
+      "total_shap_positive": 22.9392,
+      "total_shap_negative": -1.038
+    },
+    {
+      "prediction": 1.0,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 3.1919,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.4459,
+          "feature_value": 14.2229
+        },
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.137,
+          "feature_value": 11.0424
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 1.5326,
+          "feature_value": 24.419
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.2966,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_14d_sum_data_volume_mb",
+          "shap_value": 1.0274,
+          "feature_value": 218.65
+        },
+        {
+          "feature": "roll_7d_mean_device_count",
+          "shap_value": 0.7975,
+          "feature_value": 1.4286
+        },
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": 0.7848,
+          "feature_value": 5.0
+        },
+        {
+          "feature": "roll_7d_mean_is_new_device",
+          "shap_value": 0.7478,
+          "feature_value": 0.5714
+        },
+        {
+          "feature": "roll_14d_max_data_volume_mb",
+          "shap_value": 0.6409,
+          "feature_value": 36.454
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.1258,
+          "feature_value": 99.0
+        },
+        {
+          "feature": "roll_14d_mean_data_egress_volume",
+          "shap_value": -0.1023,
+          "feature_value": 1.4921
+        },
+        {
+          "feature": "delta_login_hour",
+          "shap_value": -0.0959,
+          "feature_value": 12.85
+        },
+        {
+          "feature": "external_email_ratio",
+          "shap_value": -0.0852,
+          "feature_value": 0.0
+        },
+        {
+          "feature": "velocity_data_egress_volume",
+          "shap_value": -0.0845,
+          "feature_value": -0.0924
+        },
+        {
+          "feature": "zscore_role_login_hour",
+          "shap_value": -0.0839,
+          "feature_value": 0.5444
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0778,
+          "feature_value": 7.0714
+        },
+        {
+          "feature": "zscore_role_data_volume_mb",
+          "shap_value": -0.0706,
+          "feature_value": -0.097
+        },
+        {
+          "feature": "unique_recipients",
+          "shap_value": -0.0654,
+          "feature_value": 1.0
+        },
+        {
+          "feature": "zscore_dept_session_duration_hrs",
+          "shap_value": -0.0492,
+          "feature_value": -1.0941
+        }
+      ],
+      "total_shap_positive": 22.8449,
+      "total_shap_negative": -1.2791
+    },
+    {
+      "prediction": 1.0,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 3.2165,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.5716,
+          "feature_value": 14.1918
+        },
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.2621,
+          "feature_value": 13.7645
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 1.5109,
+          "feature_value": 22.1153
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.3361,
+          "feature_value": 36.454
+        },
+        {
+          "feature": "roll_14d_sum_data_volume_mb",
+          "shap_value": 1.1364,
+          "feature_value": 219.085
+        },
+        {
+          "feature": "roll_7d_mean_is_new_device",
+          "shap_value": 0.8074,
+          "feature_value": 0.7143
+        },
+        {
+          "feature": "roll_7d_mean_device_count",
+          "shap_value": 0.8067,
+          "feature_value": 1.4286
+        },
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": 0.7362,
+          "feature_value": 5.0
+        },
+        {
+          "feature": "roll_14d_max_data_volume_mb",
+          "shap_value": 0.6141,
+          "feature_value": 36.454
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.1361,
+          "feature_value": 94.0
+        },
+        {
+          "feature": "abs_delta_files_accessed",
+          "shap_value": -0.1169,
+          "feature_value": 0.0
+        },
+        {
+          "feature": "roll_14d_mean_data_egress_volume",
+          "shap_value": -0.1046,
+          "feature_value": 1.5409
+        },
+        {
+          "feature": "abs_delta_behavioral_velocity",
+          "shap_value": -0.0903,
+          "feature_value": 0.0
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0806,
+          "feature_value": 6.7143
+        },
+        {
+          "feature": "delta_login_hour",
+          "shap_value": -0.0753,
+          "feature_value": 1.69
+        },
+        {
+          "feature": "velocity_data_egress_volume",
+          "shap_value": -0.0747,
+          "feature_value": -0.0207
+        },
+        {
+          "feature": "external_email_ratio",
+          "shap_value": -0.0728,
+          "feature_value": 0.0
+        },
+        {
+          "feature": "zscore_role_login_hour",
+          "shap_value": -0.0705,
+          "feature_value": 0.9728
+        },
+        {
+          "feature": "abs_delta_avg_attachment_size",
+          "shap_value": -0.068,
+          "feature_value": 0.0
+        }
+      ],
+      "total_shap_positive": 22.5146,
+      "total_shap_negative": -1.4293
+    },
+    {
+      "prediction": 1.0,
+      "base_value": -10.6844,
+      "top_risk_factors": [
+        {
+          "feature": "roll_7d_max_data_volume_mb",
+          "shap_value": 2.7814,
+          "feature_value": 42.255
+        },
+        {
+          "feature": "roll_7d_std_data_volume_mb",
+          "shap_value": 2.1539,
+          "feature_value": 15.3018
+        },
+        {
+          "feature": "roll_14d_std_data_volume_mb",
+          "shap_value": 2.0867,
+          "feature_value": 15.2786
+        },
+        {
+          "feature": "expanding_max_data_volume",
+          "shap_value": 1.1767,
+          "feature_value": 42.255
+        },
+        {
+          "feature": "roll_7d_mean_data_volume_mb",
+          "shap_value": 1.0901,
+          "feature_value": 23.3877
+        },
+        {
+          "feature": "expanding_max_systems",
+          "shap_value": 0.8546,
+          "feature_value": 6.0
+        },
+        {
+          "feature": "zscore_role_data_egress_volume",
+          "shap_value": 0.7392,
+          "feature_value": 2.2919
+        },
+        {
+          "feature": "roll_14d_sum_data_volume_mb",
+          "shap_value": 0.736,
+          "feature_value": 259.018
+        },
+        {
+          "feature": "roll_7d_mean_device_count",
+          "shap_value": 0.7336,
+          "feature_value": 1.7143
+        },
+        {
+          "feature": "roll_7d_mean_is_new_device",
+          "shap_value": 0.6399,
+          "feature_value": 0.8571
+        }
+      ],
+      "top_protective_factors": [
+        {
+          "feature": "roll_14d_sum_files_accessed",
+          "shap_value": -0.1512,
+          "feature_value": 88.0
+        },
+        {
+          "feature": "delta_data_egress_volume",
+          "shap_value": -0.1331,
+          "feature_value": 11.883
+        },
+        {
+          "feature": "zscore_dept_unique_systems_accessed",
+          "shap_value": -0.1197,
+          "feature_value": 2.1491
+        },
+        {
+          "feature": "delta_behavioral_velocity",
+          "shap_value": -0.0995,
+          "feature_value": 4.914
+        },
+        {
+          "feature": "zscore_role_login_hour",
+          "shap_value": -0.0824,
+          "feature_value": 0.4933
+        },
+        {
+          "feature": "roll_14d_mean_files_accessed",
+          "shap_value": -0.0689,
+          "feature_value": 6.2857
+        },
+        {
+          "feature": "command_diversity_index",
+          "shap_value": -0.0614,
+          "feature_value": 0.3091
+        },
+        {
+          "feature": "roll_14d_mean_data_egress_volume",
+          "shap_value": -0.0565,
+          "feature_value": 2.4381
+        },
+        {
+          "feature": "roll_14d_max_files_accessed",
+          "shap_value": -0.0553,
+          "feature_value": 11.0
+        },
+        {
+          "feature": "behavioral_velocity",
+          "shap_value": -0.0481,
+          "feature_value": 5.914
+        }
+      ],
+      "total_shap_positive": 22.9233,
+      "total_shap_negative": -1.2044
+    }
+  ],
+  "n_features": 211,
+  "n_samples_analyzed": 2000
+}

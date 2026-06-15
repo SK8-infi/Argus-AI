@@ -184,13 +184,20 @@ def train_autoencoder(
         val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
     # ─── Model ───
+    # Derive input dim from data shape (supports both 47-feature and 211-feature modes)
+    actual_input_dim = X_train.shape[-1]
+    # Scale hidden/latent dims for larger feature sets
+    hidden_dim = max(Config.model.LSTM_HIDDEN_DIM, actual_input_dim // 4)
+    latent_dim = max(Config.model.LSTM_LATENT_DIM, actual_input_dim // 8)
+
     model = LSTMAutoencoder(
-        input_dim=Config.model.LSTM_INPUT_DIM,
-        hidden_dim=Config.model.LSTM_HIDDEN_DIM,
-        latent_dim=Config.model.LSTM_LATENT_DIM,
+        input_dim=actual_input_dim,
+        hidden_dim=hidden_dim,
+        latent_dim=latent_dim,
         num_layers=Config.model.LSTM_NUM_LAYERS,
         dropout=Config.model.LSTM_DROPOUT,
     ).to(device)
+    logger.info(f"  Model architecture: {actual_input_dim} → {hidden_dim} → {latent_dim} → {hidden_dim} → {actual_input_dim}")
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
@@ -248,9 +255,9 @@ def train_autoencoder(
                         "mean": mean,
                         "std": std,
                         "config": {
-                            "input_dim": Config.model.LSTM_INPUT_DIM,
-                            "hidden_dim": Config.model.LSTM_HIDDEN_DIM,
-                            "latent_dim": Config.model.LSTM_LATENT_DIM,
+                            "input_dim": actual_input_dim,
+                            "hidden_dim": hidden_dim,
+                            "latent_dim": latent_dim,
                             "num_layers": Config.model.LSTM_NUM_LAYERS,
                             "dropout": Config.model.LSTM_DROPOUT,
                         },

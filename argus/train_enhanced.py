@@ -300,21 +300,104 @@ def main():
     })
 
     # ═══════════════════════════════════════════════════════════
-    #  STEP 5: Ensemble Stacking (Meta-Learner)
+    #  STEP 4e: Federated Learning MLP (privacy-preserving)
     # ═══════════════════════════════════════════════════════════
     logger.info("=" * 60)
-    logger.info("STEP 5: Building Ensemble Stack...")
+    logger.info("STEP 4e: Training Federated MLP (ε-DP across departments)...")
     logger.info("=" * 60)
 
-    # Stack features: [lstm_score, if_score, xgb_prob, lgb_prob]
+    from argus.privacy.federated import FederatedTrainer, FLConfig, FederatedThreatClassifier
+
+    # Load department labels for federated split
+    features_df = pd.read_csv(proc_dir / "features_enhanced.csv")
+
+    # Build department-level data splits from training set
+    # We need to map each training sample back to its department
+    # Use the sequence metadata to get emp_ids → departments
+    seq_meta = pd.read_csv(proc_dir / "seq_meta_enhanced.csv")
+    employees = pd.read_csv(Config.paths.SYNTHETIC_DATA / "employees.csv")
+    emp_dept = employees.set_index("emp_id")["department"].to_dict()
+
+    # Map training indices to departments
+    # X_train indices correspond to the trainval split indices
+    trainval_meta = seq_meta.iloc[:len(y_trainval)]
+    train_indices = np.arange(len(y_trainval))
+    np.random.seed(args.seed)
+
+    # Get department for each training sample via seq_meta
+    all_meta = seq_meta.copy()
+    all_meta["dept"] = all_meta["emp_id"].map(emp_dept).fillna("unknown")
+
+    # Split into train/val/test same way as main pipeline
+    meta_trainval = all_meta.iloc[:len(y_trainval)]
+    meta_train = meta_trainval.iloc[:len(y_train)]
+
+    # Scale training data for FL
+    scaler_fl = StandardScaler()
+    X_train_fl = scaler_fl.fit_transform(X_train)
+    X_val_fl = scaler_fl.transform(X_val)
+    X_test_fl = scaler_fl.transform(X_test)
+
+    # Build per-department data
+    department_data = {}
+    for dept in meta_train["dept"].unique():
+        dept_mask = meta_train["dept"].values == dept
+        if dept_mask.sum() > 20:  # Skip tiny departments
+            department_data[dept] = (
+                X_train_fl[dept_mask[:len(X_train_fl)]],
+                y_train[dept_mask[:len(y_train)]],
+            )
+
+    fl_config = FLConfig(n_rounds=10, local_epochs=3, epsilon=2.0)
+    fl_trainer = FederatedTrainer(config=fl_config)
+    fl_results = fl_trainer.train(
+        department_data=department_data,
+        feature_dim=len(feature_cols),
+        device=Config.model.DEVICE,
+    )
+
+    # Get FL model predictions
+    import torch
+    fl_model = fl_results["global_model"]
+    fl_model.eval()
+    with torch.no_grad():
+        fl_probs_train = torch.sigmoid(fl_model(torch.FloatTensor(X_train_fl))).numpy().flatten()
+        fl_probs_val = torch.sigmoid(fl_model(torch.FloatTensor(X_val_fl))).numpy().flatten()
+        fl_probs_test = torch.sigmoid(fl_model(torch.FloatTensor(X_test_fl))).numpy().flatten()
+
+    fl_val_f1 = _best_f1_threshold(y_val, fl_probs_val)
+    logger.info(f"  Federated MLP Val F1: {fl_val_f1['f1']:.4f} (threshold={fl_val_f1['threshold']:.3f})")
+    logger.info(f"  Privacy: ε={fl_results['privacy_report']['epsilon_spent']:.3f} spent "
+                f"(budget: {fl_results['privacy_report']['epsilon_budget']})")
+
+    # Save FL model
+    torch.save(fl_model.state_dict(), models_dir / "federated_mlp.pt")
+    joblib.dump(scaler_fl, models_dir / "scaler_fl.joblib")
+
+    experiment_log.append({
+        "experiment": "Federated MLP (ε-DP)",
+        "val_f1": round(fl_val_f1["f1"], 4),
+        "val_threshold": round(fl_val_f1["threshold"], 3),
+        "epsilon_spent": round(fl_results["privacy_report"]["epsilon_spent"], 4),
+        "departments": list(department_data.keys()),
+    })
+
+    # ═══════════════════════════════════════════════════════════
+    #  STEP 5: Ensemble Stacking (Meta-Learner) — now 5 models
+    # ═══════════════════════════════════════════════════════════
+    logger.info("=" * 60)
+    logger.info("STEP 5: Building Ensemble Stack (5 base learners)...")
+    logger.info("=" * 60)
+
+    # Stack features: [lstm_score, if_score, xgb_prob, lgb_prob, fl_prob]
     stack_train = np.column_stack([
-        lstm_scores_train, if_scores_train, xgb_probs_train, lgb_probs_train
+        lstm_scores_train, if_scores_train, xgb_probs_train, lgb_probs_train, fl_probs_train
     ])
     stack_val = np.column_stack([
-        lstm_scores_val, if_scores_val, xgb_probs_val, lgb_probs_val
+        lstm_scores_val, if_scores_val, xgb_probs_val, lgb_probs_val, fl_probs_val
     ])
     stack_test = np.column_stack([
-        lstm_scores_test, if_scores_test, xgb_probs_test, lgb_probs_test
+        lstm_scores_test, if_scores_test, xgb_probs_test, lgb_probs_test, fl_probs_test
     ])
 
     # Meta-learner: Logistic Regression
@@ -332,7 +415,7 @@ def main():
     meta_val_f1 = _best_f1_threshold(y_val, meta_probs_val)
     logger.info(f"  Meta-Learner Val F1: {meta_val_f1['f1']:.4f} (threshold={meta_val_f1['threshold']:.3f})")
     logger.info(f"  Meta-Learner coefficients: LSTM={meta_model.coef_[0][0]:.4f}, IF={meta_model.coef_[0][1]:.4f}, "
-                f"XGB={meta_model.coef_[0][2]:.4f}, LGB={meta_model.coef_[0][3]:.4f}")
+                f"XGB={meta_model.coef_[0][2]:.4f}, LGB={meta_model.coef_[0][3]:.4f}, FL={meta_model.coef_[0][4]:.4f}")
 
     joblib.dump(meta_model, models_dir / "meta_learner.joblib")
 
@@ -435,6 +518,7 @@ def main():
             "isolation_forest": float(meta_model.coef_[0][1]),
             "xgboost": float(meta_model.coef_[0][2]),
             "lightgbm": float(meta_model.coef_[0][3]),
+            "federated_mlp": float(meta_model.coef_[0][4]),
         },
         "smote_applied": args.smote,
     }

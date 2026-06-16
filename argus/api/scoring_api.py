@@ -78,15 +78,24 @@ models = {}
 data = {}
 
 # ─── Simulation state ───
+# fractional_day is continuous: 0.0 = start of day 30 at 08:00,
+# 0.5 = 20:00 same day, 1.0 = 08:00 next day (day 31), etc.
+# current_day = start_day + floor(fractional_day)
+# Simulated clock derived from fractional part.
+SIM_START_HOUR = 8  # Simulation begins at 08:00 each day
+SIM_DAY_REAL_SECS = 60.0  # At 1× speed, 1 simulated day = 60 real seconds
+
 simulation = {
-    "current_day": 30,       # Start at end of baseline period
-    "max_day": 89,           # Last available day (0-indexed)
-    "min_day": 5,            # Earliest day we allow
-    "speed": 1,              # 1× real-time (1 sim-day per 60s)
-    "auto_advance": True,    # Auto-tick enabled
-    "paused": False,         # Paused state
-    "last_tick_time": 0.0,   # Unix timestamp of last tick
-    "started": False,        # Whether the sim thread has started
+    "start_day": 30,          # First simulation day
+    "current_day": 30,        # Derived: start_day + floor(fractional_day)
+    "fractional_day": 0.0,    # Continuous day progress
+    "max_day": 89,            # Last available day
+    "min_day": 5,             # Earliest day
+    "speed": 1,               # Speed multiplier
+    "auto_advance": True,     # Auto-tick enabled
+    "paused": False,          # Paused state
+    "last_real_time": 0.0,    # Real unix timestamp for delta calc
+    "started": False,         # Whether sim thread started
 }
 sim_lock = threading.Lock()
 
@@ -421,29 +430,52 @@ def _update_scores_for_day(target_day: int):
 # ═══════════════════════════════════════════════════════════════
 
 def _simulation_loop():
-    """Background thread that auto-advances the simulation day."""
+    """Background thread that continuously advances simulated time.
+    
+    fractional_day advances smoothly. Days change when floor() increments.
+    At 1× speed, 1 simulated day = SIM_DAY_REAL_SECS (60) real seconds.
+    At 30× speed, 1 simulated day = 2 real seconds.
+    """
     while True:
-        time.sleep(0.1)  # Check every 100ms for snappy response
+        time.sleep(0.1)  # 100ms resolution
 
         with sim_lock:
             if simulation["paused"] or not simulation["auto_advance"]:
+                # Keep last_real_time fresh so we don't jump when unpausing
+                simulation["last_real_time"] = time.time()
                 continue
 
+            now = time.time()
+            real_elapsed = now - simulation["last_real_time"]
+            simulation["last_real_time"] = now
+
+            # Clamp delta to avoid huge jumps (e.g. on startup)
+            real_elapsed = min(real_elapsed, 2.0)
+
+            # Advance fractional day: speed / SIM_DAY_REAL_SECS per real second
             speed = simulation["speed"]
-            # Interval: 8s at 1×, 4s at 2×, 1.6s at 5×, 0.8s at 10×, ~0.27s at 30×
-            interval = 8.0 / max(1, speed)
-            elapsed = time.time() - simulation["last_tick_time"]
+            day_advance = real_elapsed * speed / SIM_DAY_REAL_SECS
+            old_frac = simulation["fractional_day"]
+            new_frac = old_frac + day_advance
 
-            if elapsed >= interval:
-                current = simulation["current_day"]
-                max_day = simulation["max_day"]
+            # Clamp to max
+            max_frac = simulation["max_day"] - simulation["start_day"]
+            if new_frac > max_frac:
+                new_frac = max_frac
 
-                if current < max_day:
-                    simulation["current_day"] = current + 1
-                    simulation["last_tick_time"] = time.time()
-                    _update_scores_for_day(current + 1)
-                    logger.debug(f"  ⏩ Simulation tick: Day {current + 1}/{max_day} (speed={speed}×)")
-                    _schedule_ws_broadcast()
+            simulation["fractional_day"] = new_frac
+
+            # Check if we crossed a day boundary
+            old_day = simulation["start_day"] + int(old_frac)
+            new_day = simulation["start_day"] + int(new_frac)
+            simulation["current_day"] = new_day
+
+            if new_day != old_day and new_day <= simulation["max_day"]:
+                _update_scores_for_day(new_day)
+                logger.debug(f"  ⏩ Day change: Day {new_day}/{simulation['max_day']} (speed={speed}×)")
+
+            # Bump version so WS push loop always streams the clock
+            _schedule_ws_broadcast()
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -538,14 +570,25 @@ def _build_ws_snapshot() -> dict:
     metrics = data.get("metrics", {})
     best_result = metrics.get("all_results", {}).get(metrics.get("best_model", ""), {})
 
+    # ── Compute simulated clock from fractional_day ──
+    frac_part = simulation["fractional_day"] % 1.0  # 0.0 to 1.0 within current day
+    sim_total_seconds = frac_part * 86400  # seconds into the day (0-86400)
+    # Offset by SIM_START_HOUR so 0.0 = 08:00, not 00:00
+    sim_total_seconds = (sim_total_seconds + SIM_START_HOUR * 3600) % 86400
+    sim_h = int(sim_total_seconds // 3600)
+    sim_m = int((sim_total_seconds % 3600) // 60)
+    sim_s = int(sim_total_seconds % 60)
+    sim_clock = f"{sim_h:02d}:{sim_m:02d}:{sim_s:02d}"
+
     return _sanitize({
         "type": "state_update",
-        "server_time": datetime.now().isoformat(),
+        "server_time": sim_clock,
         "simulation": {
             "current_day": current_day,
             "max_day": simulation["max_day"],
             "speed": simulation["speed"],
             "paused": simulation["paused"],
+            "fractional_day": round(simulation["fractional_day"], 4),
         },
         "overview": {
             "total_employees": total,
@@ -620,29 +663,20 @@ async def websocket_live(ws: WebSocket):
         ws_clients.discard(ws)
         return
 
-    # Track last pushed state
-    last_version = simulation.get("_ws_version", 0)
-    last_day = simulation["current_day"]
+    # Track state for push loop
     closed = False
 
     async def push_loop():
-        """Push state updates when simulation advances."""
-        nonlocal last_version, last_day, closed
+        """Push state updates continuously (sim clock always changes)."""
+        nonlocal closed
         try:
             while not closed:
-                await asyncio.sleep(0.3)  # Check every 300ms for real-time push
-                cur_version = simulation.get("_ws_version", 0)
-                cur_day = simulation["current_day"]
-
-                # Push if version bumped (sim tick) or day changed
-                if cur_version != last_version or cur_day != last_day:
-                    last_version = cur_version
-                    last_day = cur_day
-                    try:
-                        snapshot = _build_ws_snapshot()
-                        await ws.send_text(json.dumps(snapshot))
-                    except Exception:
-                        break
+                await asyncio.sleep(0.5)  # Push every 500ms
+                try:
+                    snapshot = _build_ws_snapshot()
+                    await ws.send_text(json.dumps(snapshot))
+                except Exception:
+                    break
         except asyncio.CancelledError:
             pass
 
@@ -659,30 +693,31 @@ async def websocket_live(ws: WebSocket):
                         speed = max(1, min(30, cmd.get("speed", 1)))
                         with sim_lock:
                             simulation["speed"] = speed
-                            simulation["last_tick_time"] = time.time()
                     elif action == "pause":
                         with sim_lock:
                             simulation["paused"] = not simulation["paused"]
-                            if not simulation["paused"]:
-                                simulation["last_tick_time"] = time.time()
+                            simulation["last_real_time"] = time.time()
                     elif action == "reset":
                         with sim_lock:
-                            simulation["current_day"] = 30
+                            simulation["fractional_day"] = 0.0
+                            simulation["current_day"] = simulation["start_day"]
                             simulation["paused"] = False
-                            simulation["last_tick_time"] = time.time()
-                            _update_scores_for_day(30)
+                            simulation["last_real_time"] = time.time()
+                            _update_scores_for_day(simulation["start_day"])
                     elif action == "jump":
                         day = max(simulation["min_day"], min(simulation["max_day"], cmd.get("day", 30)))
                         with sim_lock:
+                            simulation["fractional_day"] = float(day - simulation["start_day"])
                             simulation["current_day"] = day
-                            simulation["last_tick_time"] = time.time()
+                            simulation["last_real_time"] = time.time()
                             _update_scores_for_day(day)
                     elif action == "tick":
                         with sim_lock:
                             current = simulation["current_day"]
                             if current < simulation["max_day"]:
+                                simulation["fractional_day"] = float(current + 1 - simulation["start_day"])
                                 simulation["current_day"] = current + 1
-                                simulation["last_tick_time"] = time.time()
+                                simulation["last_real_time"] = time.time()
                                 _update_scores_for_day(current + 1)
 
                     # Bump version so push loop sends immediately
@@ -726,8 +761,9 @@ async def simulate_tick():
         max_day = simulation["max_day"]
         if current >= max_day:
             return {"status": "at_max", "current_day": current}
+        simulation["fractional_day"] = float(current + 1 - simulation["start_day"])
         simulation["current_day"] = current + 1
-        simulation["last_tick_time"] = time.time()
+        simulation["last_real_time"] = time.time()
         _update_scores_for_day(current + 1)
     _schedule_ws_broadcast()
     return {"status": "ok", "current_day": current + 1}
@@ -739,7 +775,6 @@ async def simulate_set_speed(req: SpeedRequest):
     speed = max(1, min(30, req.speed))
     with sim_lock:
         simulation["speed"] = speed
-        simulation["last_tick_time"] = time.time()  # Reset timer to avoid immediate tick
     _schedule_ws_broadcast()
     return {"status": "ok", "speed": speed}
 
@@ -748,12 +783,13 @@ async def simulate_set_speed(req: SpeedRequest):
 async def simulate_reset():
     """Reset simulation to day 30."""
     with sim_lock:
-        simulation["current_day"] = 30
+        simulation["fractional_day"] = 0.0
+        simulation["current_day"] = simulation["start_day"]
         simulation["paused"] = False
-        simulation["last_tick_time"] = time.time()
-        _update_scores_for_day(30)
+        simulation["last_real_time"] = time.time()
+        _update_scores_for_day(simulation["start_day"])
     _schedule_ws_broadcast()
-    return {"status": "ok", "current_day": 30}
+    return {"status": "ok", "current_day": simulation["start_day"]}
 
 
 @app.post("/api/simulate/pause")
@@ -761,8 +797,7 @@ async def simulate_pause():
     """Toggle pause state."""
     with sim_lock:
         simulation["paused"] = not simulation["paused"]
-        if not simulation["paused"]:
-            simulation["last_tick_time"] = time.time()
+        simulation["last_real_time"] = time.time()
     _schedule_ws_broadcast()
     return {"status": "ok", "paused": simulation["paused"]}
 
@@ -772,8 +807,9 @@ async def simulate_jump(req: JumpRequest):
     """Jump to a specific day."""
     day = max(simulation["min_day"], min(simulation["max_day"], req.day))
     with sim_lock:
+        simulation["fractional_day"] = float(day - simulation["start_day"])
         simulation["current_day"] = day
-        simulation["last_tick_time"] = time.time()
+        simulation["last_real_time"] = time.time()
         _update_scores_for_day(day)
     _schedule_ws_broadcast()
     return {"status": "ok", "current_day": day}

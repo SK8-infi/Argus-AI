@@ -21,7 +21,8 @@ function IntentChainViz({ chain }: { chain: Alert['intentChain'] }) {
     'Credential Compromise': ['login_from_unusual_location', 'rapid_system_switching', 'access_pattern_mismatch', 'data_access_outside_role'],
   };
 
-  const steps = allSteps[chain.pattern] || chain.matchedSteps;
+  const matchedStrs = (chain.matchedSteps || []).map((s: unknown) => String(s));
+  const steps: string[] = allSteps[chain.pattern] || matchedStrs;
 
   return (
     <div style={{ marginTop: 12 }}>
@@ -30,12 +31,13 @@ function IntentChainViz({ chain }: { chain: Alert['intentChain'] }) {
       </div>
       <div className="intent-chain">
         {steps.map((step, i) => {
-          const isMatched = chain.matchedSteps.includes(step);
+          const stepStr = String(step);
+          const isMatched = matchedStrs.includes(stepStr);
           return (
-            <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div key={stepStr + i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div className={`intent-step ${isMatched ? 'matched' : ''}`}>
                 {isMatched && '✓ '}
-                {step.replace(/_/g, ' ')}
+                {stepStr.replace(/_/g, ' ')}
               </div>
               {i < steps.length - 1 && <span className="intent-arrow">→</span>}
             </div>
@@ -45,7 +47,7 @@ function IntentChainViz({ chain }: { chain: Alert['intentChain'] }) {
       <div className="flex items-center gap-8 mt-8">
         <Target size={13} style={{ color: 'var(--cyan-500)' }} />
         <span className="text-xs text-mono" style={{ color: 'var(--cyan-400)' }}>
-          Confidence: {(chain.confidence * 100).toFixed(0)}% • {chain.matchedSteps.length}/{steps.length} steps matched
+          Confidence: {(chain.confidence * 100).toFixed(0)}% • {matchedStrs.length}/{steps.length} steps matched
         </span>
       </div>
     </div>

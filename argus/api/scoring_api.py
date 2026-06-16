@@ -586,25 +586,11 @@ def _build_ws_snapshot() -> dict:
 
 
 def _schedule_ws_broadcast():
-    """Schedule a WebSocket broadcast from the simulation thread (non-async context)."""
-    global _main_loop
-    if _main_loop and ws_clients:
-        asyncio.run_coroutine_threadsafe(_broadcast_state(), _main_loop)
-
-
-async def _broadcast_state():
-    """Send current state snapshot to all connected WebSocket clients."""
-    if not ws_clients:
-        return
-    snapshot = _build_ws_snapshot()
-    payload = json.dumps(snapshot)
-    dead = set()
-    for ws in ws_clients.copy():
-        try:
-            await ws.send_text(payload)
-        except Exception:
-            dead.add(ws)
-    ws_clients -= dead
+    """Schedule a WebSocket broadcast from the simulation thread.
+    Sets a flag that the per-client push loops will detect.
+    """
+    # We use a simple version counter that push loops check
+    simulation["_ws_version"] = simulation.get("_ws_version", 0) + 1
 
 
 @app.on_event("startup")
@@ -616,59 +602,113 @@ async def _capture_event_loop():
 
 @app.websocket("/ws/live")
 async def websocket_live(ws: WebSocket):
-    """WebSocket endpoint that streams live simulation state."""
+    """WebSocket endpoint that streams live simulation state.
+    
+    Two concurrent tasks per client:
+      1. Pusher: checks for state changes every 1s, sends snapshot
+      2. Receiver: handles incoming control messages (speed/pause/etc.)
+    """
     await ws.accept()
     ws_clients.add(ws)
     logger.info(f"  🔌 WebSocket client connected ({len(ws_clients)} total)")
 
+    # Send initial snapshot immediately
     try:
-        # Send initial state snapshot
         snapshot = _build_ws_snapshot()
         await ws.send_text(json.dumps(snapshot))
+    except Exception:
+        ws_clients.discard(ws)
+        return
 
-        # Keep connection alive; handle incoming control messages
-        while True:
-            msg = await ws.receive_text()
-            try:
-                cmd = json.loads(msg)
-                action = cmd.get("action")
-                if action == "set_speed":
-                    speed = max(1, min(30, cmd.get("speed", 1)))
-                    with sim_lock:
-                        simulation["speed"] = speed
-                        simulation["last_tick_time"] = time.time()
-                elif action == "pause":
-                    with sim_lock:
-                        simulation["paused"] = not simulation["paused"]
-                        if not simulation["paused"]:
-                            simulation["last_tick_time"] = time.time()
-                elif action == "reset":
-                    with sim_lock:
-                        simulation["current_day"] = 30
-                        simulation["paused"] = False
-                        simulation["last_tick_time"] = time.time()
-                        _update_scores_for_day(30)
-                elif action == "jump":
-                    day = max(simulation["min_day"], min(simulation["max_day"], cmd.get("day", 30)))
-                    with sim_lock:
-                        simulation["current_day"] = day
-                        simulation["last_tick_time"] = time.time()
-                        _update_scores_for_day(day)
-                elif action == "tick":
-                    with sim_lock:
-                        current = simulation["current_day"]
-                        if current < simulation["max_day"]:
-                            simulation["current_day"] = current + 1
-                            simulation["last_tick_time"] = time.time()
-                            _update_scores_for_day(current + 1)
-                # Broadcast updated state to all clients after any action
-                await _broadcast_state()
-            except json.JSONDecodeError:
-                pass
+    # Track last pushed state
+    last_version = simulation.get("_ws_version", 0)
+    last_day = simulation["current_day"]
+    closed = False
 
-    except WebSocketDisconnect:
-        pass
+    async def push_loop():
+        """Push state updates when simulation advances."""
+        nonlocal last_version, last_day, closed
+        try:
+            while not closed:
+                await asyncio.sleep(1.0)  # Check every 1 second
+                cur_version = simulation.get("_ws_version", 0)
+                cur_day = simulation["current_day"]
+
+                # Push if version bumped (sim tick) or day changed
+                if cur_version != last_version or cur_day != last_day:
+                    last_version = cur_version
+                    last_day = cur_day
+                    try:
+                        snapshot = _build_ws_snapshot()
+                        await ws.send_text(json.dumps(snapshot))
+                    except Exception:
+                        break
+        except asyncio.CancelledError:
+            pass
+
+    async def receive_loop():
+        """Handle incoming control messages from client."""
+        nonlocal closed
+        try:
+            while True:
+                msg = await ws.receive_text()
+                try:
+                    cmd = json.loads(msg)
+                    action = cmd.get("action")
+                    if action == "set_speed":
+                        speed = max(1, min(30, cmd.get("speed", 1)))
+                        with sim_lock:
+                            simulation["speed"] = speed
+                            simulation["last_tick_time"] = time.time()
+                    elif action == "pause":
+                        with sim_lock:
+                            simulation["paused"] = not simulation["paused"]
+                            if not simulation["paused"]:
+                                simulation["last_tick_time"] = time.time()
+                    elif action == "reset":
+                        with sim_lock:
+                            simulation["current_day"] = 30
+                            simulation["paused"] = False
+                            simulation["last_tick_time"] = time.time()
+                            _update_scores_for_day(30)
+                    elif action == "jump":
+                        day = max(simulation["min_day"], min(simulation["max_day"], cmd.get("day", 30)))
+                        with sim_lock:
+                            simulation["current_day"] = day
+                            simulation["last_tick_time"] = time.time()
+                            _update_scores_for_day(day)
+                    elif action == "tick":
+                        with sim_lock:
+                            current = simulation["current_day"]
+                            if current < simulation["max_day"]:
+                                simulation["current_day"] = current + 1
+                                simulation["last_tick_time"] = time.time()
+                                _update_scores_for_day(current + 1)
+
+                    # Bump version so push loop sends immediately
+                    _schedule_ws_broadcast()
+
+                    # Also send immediate response to this client
+                    try:
+                        snapshot = _build_ws_snapshot()
+                        await ws.send_text(json.dumps(snapshot))
+                    except Exception:
+                        break
+                except json.JSONDecodeError:
+                    pass
+        except WebSocketDisconnect:
+            pass
+        except Exception:
+            pass
+        finally:
+            closed = True
+
+    # Run both loops concurrently
+    push_task = asyncio.create_task(push_loop())
+    try:
+        await receive_loop()
     finally:
+        push_task.cancel()
         ws_clients.discard(ws)
         logger.info(f"  🔌 WebSocket client disconnected ({len(ws_clients)} remaining)")
 

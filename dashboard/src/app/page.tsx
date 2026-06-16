@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Sidebar from '@/components/Sidebar';
 import SimulationControl from '@/components/SimulationControl';
 import MockBanner from '@/components/MockBanner';

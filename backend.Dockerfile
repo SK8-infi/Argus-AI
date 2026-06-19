@@ -22,10 +22,9 @@ COPY demo.py .
 # Copy data & models (needed at runtime for scoring)
 COPY data/ ./data/
 COPY models/ ./models/
-COPY results/ ./results/
 
-# Copy env file if exists
-COPY .env* ./
+# Create results dir (may not exist in build context)
+RUN mkdir -p ./results
 
 EXPOSE 8000
 

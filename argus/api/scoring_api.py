@@ -29,6 +29,7 @@ Usage:
 """
 
 import sys
+import os
 import json
 import time
 import asyncio
@@ -67,7 +68,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -1135,11 +1136,12 @@ def main():
         except Exception as e:
             logger.warning(f"  ⚠️ SHAP explainer failed to load: {e}")
 
-    logger.info("Starting Argus AI API server (v2.1 — Live Simulation)...")
+    port = int(os.environ.get("PORT", 8000))
+    logger.info(f"Starting Argus AI API server (v2.1 — Live Simulation) on port {port}...")
     uvicorn.run(
         "argus.api.scoring_api:app",
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=False,
         log_level="info",
     )

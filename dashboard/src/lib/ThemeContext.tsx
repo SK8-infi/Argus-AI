@@ -21,7 +21,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const stored = localStorage.getItem('argus-theme') as Theme | null;
     if (stored === 'light' || stored === 'dark') {
       setThemeState(stored);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    } else {
+      // Default to dark mode for first-time visitors
       setThemeState('dark');
     }
     setReady(true);

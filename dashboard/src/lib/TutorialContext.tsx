@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useCallback,
+  useEffect,
   type ReactNode,
 } from 'react';
 import type { Step } from 'react-joyride';
@@ -302,6 +303,7 @@ const TutorialContext = createContext<TutorialState>({
 export function TutorialProvider({ children }: { children: ReactNode }) {
   const [run, setRun] = useState(false);
   const [steps, setSteps] = useState<Step[]>([]);
+  const [hasAutoStarted, setHasAutoStarted] = useState(false);
 
   const startTutorial = useCallback((route: string) => {
     // Try exact match first, then try the dynamic pattern
@@ -321,7 +323,31 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
 
   const stopTutorial = useCallback(() => {
     setRun(false);
+    // Mark tutorial as seen when user finishes/skips
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('argus-tutorial-seen', 'true');
+    }
   }, []);
+
+  // Auto-start tutorial on first visit
+  useEffect(() => {
+    if (hasAutoStarted) return;
+    if (typeof window === 'undefined') return;
+
+    const seen = localStorage.getItem('argus-tutorial-seen');
+    if (!seen) {
+      setHasAutoStarted(true);
+      // Delay to ensure page is fully rendered
+      const timer = setTimeout(() => {
+        const overviewSteps = TUTORIALS['/'];
+        if (overviewSteps && overviewSteps.length > 0) {
+          setSteps(overviewSteps);
+          setRun(true);
+        }
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [hasAutoStarted]);
 
   return (
     <TutorialContext.Provider value={{ run, steps, startTutorial, stopTutorial, setRun }}>

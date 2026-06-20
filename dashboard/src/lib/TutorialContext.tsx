@@ -6,9 +6,11 @@ import {
   useState,
   useCallback,
   useEffect,
+  useRef,
   type ReactNode,
 } from 'react';
 import type { Step } from 'react-joyride';
+import { usePathname } from 'next/navigation';
 
 /* ═══════════════════════════════════════════════════════════════
    Tutorial step definitions — one array per route
@@ -246,7 +248,7 @@ export const TUTORIALS: Record<string, Step[]> = {
     {
       target: '.card-glow-red, .card-glow-cyan',
       content:
-        'The employee header card shows their name, role, department, branch, and clearance level. The large number on the right is their current trust score — glowing red for high-risk employees, cyan for trusted ones.',
+        'The employee header shows their name, role, department, branch, and clearance level. The large number is their trust score — red glow for high-risk (< 40), cyan for trusted (> 80). Below is the risk classification.',
       title: '👤 Employee Header',
       placement: 'bottom',
       skipBeacon: true,
@@ -254,8 +256,50 @@ export const TUTORIALS: Record<string, Step[]> = {
     {
       target: '.card-title',
       content:
-        'The Digital Twin Comparison uses a radar chart to overlay the employee\'s expected behavior (cyan) against their actual behavior (red). Large gaps between the two shapes indicate behavioral anomalies worth investigating.',
+        'The Digital Twin Comparison uses a radar chart to overlay expected behavior baseline (cyan) against actual current behavior (red). Large gaps indicate behavioral anomalies across dimensions like circadian rhythm, access patterns, and system usage.',
       title: '🕸️ Twin Radar Comparison',
+      placement: 'bottom',
+    },
+    {
+      target: '.gemini-card',
+      content:
+        'This is the Gemini AI Analysis panel — powered by Google Gemini Flash Lite. It provides three features:\n\n• Threat Report — AI-generated insider threat assessment\n• Recommendations — Actionable response plan for SOC analysts\n• Ask AI — Interactive chat for follow-up questions\n\nAll features use real-time data: trust score, SHAP values, and kill chain alerts.',
+      title: '🤖 Gemini AI Analysis',
+      placement: 'top',
+    },
+    {
+      target: '.gemini-header',
+      content:
+        'Click to expand/collapse the Gemini panel. The "FLASH LITE" badge indicates the Gemini model variant. Collapsible so analysts can focus on charts when needed.',
+      title: '📋 Panel Header',
+      placement: 'bottom',
+    },
+    {
+      target: '.gemini-tabs',
+      content:
+        'Three analysis modes:\n\n1. Threat Report — Comprehensive risk assessment with severity grading\n2. Recommendations — Step-by-step mitigation and investigation plan\n3. Ask AI — Free-form chat for specific questions about this employee',
+      title: '🗂️ Analysis Tabs',
+      placement: 'bottom',
+    },
+    {
+      target: '.gemini-report-tab',
+      content:
+        'Generates a structured insider threat assessment. Gemini analyzes SHAP feature contributions, behavioral anomalies, trust trajectory, and alert kill chain to produce:\n\n• Risk Level Assessment\n• Key Behavioral Indicators\n• SHAP Feature Analysis (plain English)\n• Timeline Correlation\n• Confidence Assessment',
+      title: '📄 Threat Report',
+      placement: 'bottom',
+    },
+    {
+      target: '.gemini-recommendations-tab',
+      content:
+        'Provides actionable guidance for SOC analysts:\n\n• Immediate Actions — restrict access, enable MFA\n• Investigation Steps — specific logs and queries\n• Escalation Criteria — when to involve CISO/HR/legal\n• Monitoring Plan — ongoing surveillance recommendations\n\nAll tailored to this employee\'s specific risk profile.',
+      title: '🛡️ Recommendations',
+      placement: 'bottom',
+    },
+    {
+      target: '.gemini-chat-tab',
+      content:
+        'Chat with Argus AI about this employee. Try asking:\n\n• "Why was this person flagged?"\n• "What does clearance_normalized mean?"\n• "Is this a false positive?"\n• "Compare their behavior to department baseline"\n\nThe AI has full context of trust score, SHAP values, and alerts.',
+      title: '💬 Ask AI Chat',
       placement: 'bottom',
     },
     {
@@ -303,51 +347,74 @@ const TutorialContext = createContext<TutorialState>({
 export function TutorialProvider({ children }: { children: ReactNode }) {
   const [run, setRun] = useState(false);
   const [steps, setSteps] = useState<Step[]>([]);
-  const [hasAutoStarted, setHasAutoStarted] = useState(false);
+  const pathname = usePathname();
+  const currentRouteRef = useRef('');
 
-  const startTutorial = useCallback((route: string) => {
-    // Try exact match first, then try the dynamic pattern
-    let tutorialSteps = TUTORIALS[route];
-    if (!tutorialSteps) {
-      // Match /employee/[anything] to /employee/[id]
-      if (route.startsWith('/employee/')) {
-        tutorialSteps = TUTORIALS['/employee/[id]'];
-      }
-    }
-    if (tutorialSteps && tutorialSteps.length > 0) {
-      setSteps(tutorialSteps);
-      // Small delay to let DOM settle before joyride scans targets
-      setTimeout(() => setRun(true), 300);
+  /** Resolve which tutorial key matches a given pathname */
+  const resolveTutorialKey = useCallback((route: string): string | null => {
+    if (TUTORIALS[route]) return route;
+    if (route.startsWith('/employee/')) return '/employee/[id]';
+    return null;
+  }, []);
+
+  /** Get the set of routes whose tutorials have already been seen */
+  const getSeenRoutes = useCallback((): Set<string> => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const raw = localStorage.getItem('argus-tutorials-seen');
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch {
+      return new Set();
     }
   }, []);
+
+  /** Mark a route's tutorial as seen */
+  const markRouteSeen = useCallback((route: string) => {
+    if (typeof window === 'undefined') return;
+    const seen = getSeenRoutes();
+    seen.add(route);
+    localStorage.setItem('argus-tutorials-seen', JSON.stringify([...seen]));
+  }, [getSeenRoutes]);
+
+  const startTutorial = useCallback((route: string) => {
+    const key = resolveTutorialKey(route);
+    if (!key) return;
+    const tutorialSteps = TUTORIALS[key];
+    if (tutorialSteps && tutorialSteps.length > 0) {
+      setSteps(tutorialSteps);
+      setTimeout(() => setRun(true), 300);
+    }
+  }, [resolveTutorialKey]);
 
   const stopTutorial = useCallback(() => {
     setRun(false);
-    // Mark tutorial as seen when user finishes/skips
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('argus-tutorial-seen', 'true');
-    }
-  }, []);
+    // Mark this route's tutorial as seen
+    const key = resolveTutorialKey(currentRouteRef.current);
+    if (key) markRouteSeen(key);
+  }, [resolveTutorialKey, markRouteSeen]);
 
-  // Auto-start tutorial on first visit
+  // Auto-start tutorial when navigating to a page with an unseen tutorial
   useEffect(() => {
-    if (hasAutoStarted) return;
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !pathname) return;
+    currentRouteRef.current = pathname;
 
-    const seen = localStorage.getItem('argus-tutorial-seen');
-    if (!seen) {
-      setHasAutoStarted(true);
-      // Delay to ensure page is fully rendered
-      const timer = setTimeout(() => {
-        const overviewSteps = TUTORIALS['/'];
-        if (overviewSteps && overviewSteps.length > 0) {
-          setSteps(overviewSteps);
-          setRun(true);
-        }
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [hasAutoStarted]);
+    const key = resolveTutorialKey(pathname);
+    if (!key) return;
+
+    const seen = getSeenRoutes();
+    if (seen.has(key)) return;
+
+    // Delay to let the page render + Joyride dynamic import load
+    const timer = setTimeout(() => {
+      const tutorialSteps = TUTORIALS[key];
+      if (tutorialSteps && tutorialSteps.length > 0) {
+        setSteps(tutorialSteps);
+        setRun(true);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [pathname, resolveTutorialKey, getSeenRoutes]);
 
   return (
     <TutorialContext.Provider value={{ run, steps, startTutorial, stopTutorial, setRun }}>
@@ -359,3 +426,4 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
 export function useTutorial() {
   return useContext(TutorialContext);
 }
+

@@ -174,8 +174,8 @@ Analyst question: ${userMsg}`;
   const empName = (employeeData.name as string) || 'Employee';
 
   return (
-    <div className="card mt-24" style={{ border: '1px solid rgba(139,92,246,0.15)' }}>
-      <div className="card-header" style={{ cursor: 'pointer' }} onClick={() => setExpanded(!expanded)}>
+    <div className="card mt-24 gemini-card" style={{ border: '1px solid rgba(139,92,246,0.15)' }}>
+      <div className="card-header gemini-header" style={{ cursor: 'pointer' }} onClick={() => setExpanded(!expanded)}>
         <div className="card-title" style={{ gap: 8 }}>
           <div style={{
             width: 28, height: 28, borderRadius: 'var(--radius-md)',
@@ -203,10 +203,10 @@ Analyst question: ${userMsg}`;
       {expanded && (
         <div className="card-body">
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-            <TabButton active={activeTab === 'report'} onClick={() => setActiveTab('report')} icon={FileText} label="Threat Report" />
-            <TabButton active={activeTab === 'recommendations'} onClick={() => setActiveTab('recommendations')} icon={Shield} label="Recommendations" />
-            <TabButton active={activeTab === 'chat'} onClick={() => setActiveTab('chat')} icon={MessageSquare} label="Ask AI" />
+          <div className="gemini-tabs" style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+            <span className="gemini-report-tab"><TabButton active={activeTab === 'report'} onClick={() => setActiveTab('report')} icon={FileText} label="Threat Report" /></span>
+            <span className="gemini-recommendations-tab"><TabButton active={activeTab === 'recommendations'} onClick={() => setActiveTab('recommendations')} icon={Shield} label="Recommendations" /></span>
+            <span className="gemini-chat-tab"><TabButton active={activeTab === 'chat'} onClick={() => setActiveTab('chat')} icon={MessageSquare} label="Ask AI" /></span>
           </div>
 
           {/* Report Tab */}
@@ -219,6 +219,7 @@ Analyst question: ${userMsg}`;
                     Generate an AI-powered threat assessment for <strong style={{ color: '#e2e8f0' }}>{empName}</strong>
                   </div>
                   <button
+                    className="gemini-generate-btn"
                     onClick={generateReport}
                     disabled={loading}
                     style={{
@@ -391,7 +392,7 @@ Analyst question: ${userMsg}`;
               </div>
 
               {/* Chat Input */}
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div className="gemini-chat-input" style={{ display: 'flex', gap: 8 }}>
                 <input
                   type="text"
                   value={chatInput}
